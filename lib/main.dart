@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,11 +32,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  String _text = 'test';
 
-  void _incrementCounter() {
+  void _updateText() {
     setState(() {
-      _counter++;
+      // Load an existing PDF document.
+      final PdfDocument document =
+          PdfDocument(inputBytes: File('pdf_succinctly.pdf').readAsBytesSync());
+      // Extract the text from all the pages.
+      String text = PdfTextExtractor(document).extractText();
+      // Dispose the document.
+      document.dispose();
+      setState(() {
+        _text = text;
+      });
     });
   }
 
@@ -51,14 +63,14 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              _text,
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _updateText,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
